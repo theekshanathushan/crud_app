@@ -1,0 +1,27 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "buildConfigurations": {
+          ".": {
+            "projectId": "crud-student-app-2026",
+            "appId": "1:326062157263:android:40607333e18d317706b6ba",
+            "fileOutput": "android/app/google-services.json"
+          }
+        }
+      }
+    },
+    "dart": {
+      "lib/firebase_options.dart": {
+        "projectId": "crud-student-app-2026",
+        "configurations": {
+          "android": "1:326062157263:android:40607333e18d317706b6ba",
+          "web": "1:326062157263:web:9f18cce364cb7b6606b6ba"
+        }
+      }
+    }
+  }
+}

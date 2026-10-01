@@ -1,3 +1,4 @@
+import 'package:crud_app/firebase_options.dart';
 import 'package:crud_app/screens/create.dart';
 import 'package:crud_app/screens/delete.dart'; // Ensure this file exists
 import 'package:crud_app/screens/read.dart';   // Ensure this file exists
@@ -7,7 +8,9 @@ import 'package:flutter/material.dart';
 Future<void> main() async {
   // Ensure Flutter engine is initialized before Firebase
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   
   runApp(const MaterialApp(
     home: Home(),
