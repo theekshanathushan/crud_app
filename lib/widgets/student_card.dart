@@ -6,11 +6,14 @@ class StudentCard extends StatelessWidget {
   final int id;
   final String degree;
 
+  final VoidCallback? onUpdate;
+
   const StudentCard({
     super.key, 
     required this.name, 
     required this.id, 
-    required this.degree
+    required this.degree,
+    this.onUpdate,
   });
 
   @override
@@ -19,14 +22,36 @@ class StudentCard extends StatelessWidget {
     // 1. Return a Card widget containing the student's name, ID, and degree.
     // 2. Add an IconButton (e.g., an edit icon) that uses Navigator.push 
     //    to route the user to the UpdateScreen, passing along the student's data.
-    
-    return const Card(
-      color: Colors.blue,
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text(
-          'Student Card UI - To be implemented', 
-          style: TextStyle(color: Colors.white),
+    return Card(
+      elevation: 3,
+      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      child: ListTile(
+        leading: CircleAvatar(
+          child: Text(id.toString()),
+        ),
+        title: Text(
+          name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text('Degree: $degree\nID: $id'),
+        isThreeLine: true,
+        trailing: IconButton(
+          icon: const Icon(Icons.edit, color: Colors.blue),
+          onPressed: () async {
+            final updated = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UpdateScreen(
+                  name: name,
+                  id: id,
+                  degree: degree,
+                ),
+              ),
+            );
+            if (updated == true && onUpdate != null) {
+              onUpdate!();
+            }
+          },
         ),
       ),
     );

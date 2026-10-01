@@ -30,9 +30,10 @@ class _CreateScreenState extends State<CreateScreen> {
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
@@ -73,17 +74,40 @@ class _CreateScreenState extends State<CreateScreen> {
               ElevatedButton(
                 onPressed: () async {
                   // TODO 5: Create a Map<String, dynamic> containing the text from your controllers
-                  
-                  // TODO 6: Call Database().addStudent() passing your map and the ID string
-                  
-                  // TODO 7: If successful, clear all three controllers
-                  
-                  // TODO 8: Show a success message using Fluttertoast.showToast()
-                  
+                  final String name = nameController.text.trim();
+                  final String id = idController.text.trim();
+                  final String degree = degreeController.text.trim();
+
+                  if (name.isEmpty || id.isEmpty || degree.isEmpty) {
+                    Fluttertoast.showToast(msg: "Please fill in all fields");
+                    return;
+                  }
+
+                  Map<String, dynamic> studentInfo = {
+                    'name': name,
+                    'id': int.tryParse(id) ?? id,
+                    'degree': degree,
+                  };
+
+                  try {
+                    // TODO 6: Call Database().addStudent() passing your map and the ID string
+                    await Database().addStudent(studentInfo, id);
+
+                    // TODO 7: If successful, clear all three controllers
+                    nameController.clear();
+                    idController.clear();
+                    degreeController.clear();
+
+                    // TODO 8: Show a success message using Fluttertoast.showToast()
+                    Fluttertoast.showToast(msg: "Student added successfully");
+                  } catch (e) {
+                    Fluttertoast.showToast(msg: "Error adding student: $e");
+                  }
                 },
                 child: const Text("Submit"),
               )
             ],
+          ),
           ),
         ),
       ),

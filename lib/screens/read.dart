@@ -4,7 +4,7 @@ import 'package:crud_app/widgets/student_card.dart';
 import 'package:flutter/material.dart';
 
 class ReadScreen extends StatefulWidget {
-  const ReadScreen({Key? key}) : super(key: key);
+  const ReadScreen({super.key});
 
   @override
   State<ReadScreen> createState() => _ReadScreenState();
@@ -24,7 +24,7 @@ class _ReadScreenState extends State<ReadScreen> {
       List<Student> result = await Database().getStudentDetails();
       return result;
     } catch (e) {
-      print('Error: $e');
+      debugPrint('Error: $e');
       return [];
     }
   }
@@ -35,6 +35,16 @@ class _ReadScreenState extends State<ReadScreen> {
       appBar: AppBar(
         title: const Text('Read'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              setState(() {
+                studentDetailsListFuture = fetchData();
+              });
+            },
+          ),
+        ],
       ),
       body: _bodyWidget(),
     );
@@ -46,9 +56,46 @@ class _ReadScreenState extends State<ReadScreen> {
     // 2. Handle ConnectionState.waiting (show a CircularProgressIndicator).
     // 3. Handle errors and empty data states.
     // 4. If data exists, return a ListView.builder that displays a StudentCard for each item.
-    
-    return const Center(
-      child: Text('Read List UI - To be implemented'),
+    return FutureBuilder<List<Student>>(
+      future: studentDetailsListFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error loading students: ${snapshot.error}'),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(
+            child: Text('No students found'),
+          );
+        }
+
+        final students = snapshot.data!;
+        return RefreshIndicator(
+          onRefresh: () async {
+            setState(() {
+              studentDetailsListFuture = fetchData();
+            });
+          },
+          child: ListView.builder(
+            itemCount: students.length,
+            itemBuilder: (context, index) {
+              final student = students[index];
+              return StudentCard(
+                name: student.name,
+                id: student.id,
+                degree: student.degree,
+                onUpdate: () {
+                  setState(() {
+                    studentDetailsListFuture = fetchData();
+                  });
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
